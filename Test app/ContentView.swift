@@ -39,6 +39,9 @@ struct EscanerQRView: View {
 struct DetalleEnvioView: View {
     @State var envio: Envio
     @State private var escaneandoQR = false
+    @State private var mostrarEditor = false
+    @State private var mostrarAlertaQRRepetido = false
+    @State private var codigoRepetido = ""
     private let db = Firestore.firestore()
 
     func colorEstado(_ estado: EstadoEnvio) -> Color {
@@ -57,6 +60,21 @@ struct DetalleEnvioView: View {
         VStack(alignment: .leading) {
             // Encabezado del envío
             VStack(alignment: .leading, spacing: 0) {
+                
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        mostrarEditor = true
+                    }) {
+                        Image(systemName: "pencil")
+                            .imageScale(.medium)
+                            .padding(8)
+                            .background(Color.gray.opacity(0.2))
+                            .clipShape(Circle())
+                    }
+                }
+
+                
                 HStack {
                                     Text(envio.estado.rawValue)
                                         .font(.caption)
@@ -142,12 +160,41 @@ struct DetalleEnvioView: View {
             }
         }
         .navigationTitle("Detalle del Envío")
+        
         .sheet(isPresented: $escaneandoQR) {
             EscanerQRView { codigoEscaneado in
-                if !envio.codigosQR.contains(codigoEscaneado) {
-                    envio.codigosQR.append(codigoEscaneado)
-                    guardarEnvioActualizado()
+                let codigoRef = db.collection("codigosQRGlobales").document(codigoEscaneado)
+
+                codigoRef.getDocument { document, error in
+                    if let document = document, document.exists {
+                        // Ya existe: mostramos alerta
+                        codigoRepetido = codigoEscaneado
+                        mostrarAlertaQRRepetido = true
+                    } else {
+                        // No existe: lo agregamos
+                        envio.codigosQR.append(codigoEscaneado)
+                        guardarEnvioActualizado()
+
+                        codigoRef.setData(["usadoEnEnvio": envio.id ?? ""])
+                    }
                 }
+            }
+        }
+        
+        
+        .alert("Código ya utilizado", isPresented: $mostrarAlertaQRRepetido) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("El código '\(codigoRepetido)' ya ha sido escaneado en otro envío.")
+        }
+
+
+        
+        // ✅ Sheet para editar el envío
+        .sheet(isPresented: $mostrarEditor) {
+            FormularioEnvioView(envio: envio) { envioActualizado in
+                self.envio = envioActualizado
+                guardarEnvioActualizado()
             }
         }
     }
