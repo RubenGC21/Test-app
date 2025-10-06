@@ -217,7 +217,7 @@ enum MenuOption: String, CaseIterable, Identifiable {
 // MARK: - Vista principal con menú hamburguesa
 struct MainView: View {
     @State private var showMenu = false
-    @State private var selectedOption: MenuOption = .scanner
+    @State private var selectedOption: MenuOption = .dashboardEnvios
 
     var body: some View {
         ZStack {
@@ -232,15 +232,24 @@ struct MainView: View {
                         PlaceholderView(text: selectedOption.rawValue)
                     }
                 }
-                .navigationBarTitle("Producción Electrónica", displayMode: .inline)
-                .navigationBarItems(leading: Button(action: {
-                    withAnimation {
-                        showMenu.toggle()
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(action: {
+                            withAnimation {
+                                showMenu.toggle()
+                            }
+                        }) {
+                            Image(systemName: "line.horizontal.3")
+                                .imageScale(.large)
+                        }
                     }
-                }) {
-                    Image(systemName: "line.horizontal.3")
-                        .imageScale(.large)
-                })
+
+                    ToolbarItem(placement: .principal) {
+                        Text("Producción Electrónica")
+                            .font(.headline)
+                            .padding(.top, 8)
+                    }
+                }
             }
 
             // Fondo oscuro + Menú lateral
