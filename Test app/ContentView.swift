@@ -1,6 +1,7 @@
 import SwiftUI
 import AVFoundation
 import FirebaseFirestore
+import FirebaseFirestoreSwift
 
 struct EscanerQRView: View {
     @Environment(\.dismiss) var dismiss
@@ -345,7 +346,7 @@ struct SideMenu: View {
                             .frame(width: 20)
                         Text(option.rawValue)
                             .foregroundColor(selectedOption == option ? .orange : .primary)
-                            .bold(selectedOption == option)
+                            .fontWeight(selectedOption == option ? .bold : .regular)
                     }
                     .padding(.vertical, 8)
                     .padding(.horizontal, 12)
