@@ -1,7 +1,6 @@
 import SwiftUI
 import AVFoundation
 import FirebaseFirestore
-import FirebaseFirestoreSwift
 
 struct EscanerQRView: View {
     @Environment(\.dismiss) var dismiss
