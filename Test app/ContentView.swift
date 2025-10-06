@@ -329,40 +329,55 @@ struct SideMenu: View {
     @Binding var showMenu: Bool
 
     var body: some View {
-        VStack(alignment: .leading) {
-            HStack {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(spacing: 12) {
                 Image(systemName: "building.columns")
                     .resizable()
-                    .frame(width: 24, height: 24)
-                    .padding(.trailing, 5)
+                    .scaledToFit()
+                    .frame(width: 36, height: 36)
+                    .foregroundColor(.orange)
+
                 Text("Producción Electrónica 2.0")
                     .font(.headline)
+                    .fontWeight(.bold)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
             }
-            .padding()
+            .padding(.horizontal, 24)
+            .padding(.top, 32)
 
             Divider()
+                .padding(.top, 20)
 
-            ForEach(MenuOption.allCases) { option in
-                Button(action: {
-                    withAnimation {
-                        selectedOption = option
-                        showMenu = false
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(MenuOption.allCases) { option in
+                    Button(action: {
+                        withAnimation {
+                            selectedOption = option
+                            showMenu = false
+                        }
+                    }) {
+                        HStack(spacing: 16) {
+                            Image(systemName: option.iconName)
+                                .foregroundColor(.gray)
+                                .frame(width: 24, alignment: .center)
+
+                            Text(option.rawValue)
+                                .foregroundColor(selectedOption == option ? .orange : .primary)
+                                .fontWeight(selectedOption == option ? .bold : .regular)
+
+                            Spacer(minLength: 0)
+                        }
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 16)
+                        .frame(maxWidth: .infinity)
+                        .background(selectedOption == option ? Color.orange.opacity(0.1) : Color.clear)
+                        .cornerRadius(10)
                     }
-                }) {
-                    HStack(spacing: 16) {
-                        Image(systemName: option.iconName)
-                            .foregroundColor(.gray)
-                            .frame(width: 20)
-                        Text(option.rawValue)
-                            .foregroundColor(selectedOption == option ? .orange : .primary)
-                            .fontWeight(selectedOption == option ? .bold : .regular)
-                    }
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 12)
-                    .background(selectedOption == option ? Color.orange.opacity(0.1) : Color.clear)
-                    .cornerRadius(8)
                 }
             }
+            .padding(.horizontal, 16)
+            .padding(.top, 24)
 
             Spacer()
         }
